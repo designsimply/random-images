@@ -17,6 +17,14 @@ You can also set the number of images and the size like this: `[random_images to
 
 It shows 6 images at thumbnail size by default. It will pull any image that is attached to any published post.
 
+To call this shortcode from a theme template file, you can use something like this:
+
+`global $shortcode_tags;
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+if ( is_plugin_active( 'random-images/random-images.php' ) ) :
+	echo call_user_func( $shortcode_tags['random_images'], array( 'size' => 'thumbnail', 'total' => 9 ) );
+endif;`
+
 == Installation ==
 
 1. Download archive and unzip in wp-content/plugins or install via Plugins - Add New.
