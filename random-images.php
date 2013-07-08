@@ -10,8 +10,6 @@
 
 class Random_Images_Plugin {
 
-	public $total = 0;
-
 	function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
