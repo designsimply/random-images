@@ -28,6 +28,8 @@ class Random_Images_Plugin {
 		), $attr );
 
 		$attr['total'] = absint( $attr['total'] );
+		if ( ! in_array( $attr['size'], array( 'thumbnail', 'medium', 'large', 'full' ) ) )
+			$attr['size'] = 'thubnail';
 
 		$all_attached_images =& get_children( 'post_parent=&post_type=attachment&post_mime_type=image&numberposts=-1&poststatus=publish' );
 		$random_image = array_rand( $all_attached_images, $attr['total']  );
