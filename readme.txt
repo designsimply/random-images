@@ -20,10 +20,11 @@ It shows 6 images at thumbnail size by default. It will pull any image that is a
 To call this shortcode from a theme template file, you can use something like this:
 
 `global $shortcode_tags;
-include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-if ( is_plugin_active( 'random-images/random-images.php' ) ) :
-	echo call_user_func( $shortcode_tags['random_images'], array( 'size' => 'thumbnail', 'total' => 9 ) );
-endif;`
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); // Required when using is_plugin_active() outside of admin pages
+
+// Display a set of random images on the home page and attachment pages if the Random Images plugin is present and active
+if ( method_exists( 'Random_Images_Plugin', 'random_images' ) && is_plugin_active( 'random-images/random-images.php' ) && ( is_home() || is_attachment() ) )
+	echo call_user_func( $shortcode_tags['random_images'], array( 'size' => 'thumbnail', 'total' => 9 ) );`
 
 == Installation ==
 
