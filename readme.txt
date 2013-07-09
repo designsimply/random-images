@@ -7,15 +7,15 @@ Stable tag: 0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This WordPress plugin allows you to call random_images() in your theme to get a random set of attached images.
+The [random_images] shortcode displays random attached images from published posts.
 
 == Description ==
 
-Use the `[random_images]` in content areas to display a set of random images.
+Use the `[random_images]` shortcode to display a set of random images.
 
-You can also set the number of images and the size like this: `[random_images total=4 size=medium]`
+You can set the number of images and the size like this: `[random_images total=4 size=medium]`
 
-It shows 6 images at thumbnail size by default. It will pull any image that is attached to any published post.
+By default, 6 images will display at thumbnail size. Images attached to public posts are included.
 
 To call this shortcode from a theme template file, you can use something like this:
 
