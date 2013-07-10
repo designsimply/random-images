@@ -3,7 +3,7 @@ Contributors: designsimply
 Tags: images, random images, shortcode
 Requires at least: 2.8
 Tested up to: 3.6
-Stable tag: 0.7
+Stable tag: 0.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,10 @@ By default, 6 images will display at thumbnail size. Images attached to public p
 1. Set of eight random thumbnail images.
 
 == Changelog ==
+
+= 0.7.1 =
+* Switch to using the class as a namespace so it can be called directly in theme files.
+* Update code example in readme.txt, move to FAQ.
 
 = 0.7 =
 * First version
