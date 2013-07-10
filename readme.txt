@@ -13,23 +13,23 @@ The [random_images] shortcode displays random attached images from published pos
 
 Use the `[random_images]` shortcode to display a set of random images.
 
-You can set the number of images and the size like this: `[random_images total=4 size=medium]`
+You can set the number of images and the size like this: 
+
+`[random_images total=4 size=medium]`
 
 By default, 6 images will display at thumbnail size. Images attached to public posts are included.
-
-To call this shortcode from a theme template file, you can use something like this:
-
-`global $shortcode_tags;
-include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); // Required when using is_plugin_active() outside admin pages
-
-// Display a set of random images on the home page and attachment pages if the Random Images plugin is present and active
-if ( method_exists( 'Random_Images_Plugin', 'random_images' ) && is_plugin_active( 'random-images/random-images.php' ) && ( is_home() || is_attachment() ) )
-	echo call_user_func( $shortcode_tags['random_images'], array( 'size' => 'thumbnail', 'total' => 9 ) );`
 
 == Installation ==
 
 1. Download archive and unzip in wp-content/plugins or install via Plugins - Add New.
 1. Start using the `[random_images]` shortcode in your content.
+
+== Frequently Asked Questions ==
+
+= How can I use random images in a WordPress theme? =
+
+`if ( method_exists( 'Random_Images_Plugin', 'random_images' ) && ( is_home() || is_attachment() ) )
+   echo Random_Images_Plugin::random_images( array( 'size' => 'thumbnail', 'total' => 9 ) );`
 
 == Screenshots ==
 
