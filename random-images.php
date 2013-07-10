@@ -48,8 +48,8 @@ class Random_Images_Plugin {
 		return $output;
 	}
 
-	function enqueue_scripts() {
-		wp_enqueue_style( 'random-images', plugins_url( 'random-images.css', __FILE__ ) );
+	static function enqueue_scripts() {
+		wp_enqueue_style(  'random-images', plugins_url( 'random-images.css', __FILE__ ) );
 	}
 }
 Random_Images_Plugin::load();
