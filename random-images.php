@@ -10,16 +10,16 @@
 
 class Random_Images_Plugin {
 
-	function __construct() {
-		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+	static function load() {
+		add_action( 'init', array( 'Random_Images_Plugin', 'init' ) );
+		add_action( 'wp_enqueue_scripts', array( 'Random_Images_Plugin', 'enqueue_scripts' ) );
 	}
 
-	function init() {
-		add_shortcode( 'random_images', array( $this, 'random_images' ) );
+	static function init() {
+		add_shortcode( 'random_images', array( 'Random_Images_Plugin', 'random_images' ) );
 	}
 
-	function random_images( $attr ) {
+	static function random_images( $attr ) {
 		$attr = shortcode_atts( array(
 			'size' => 'thumbnail',
 			'total' => 6,
@@ -52,4 +52,4 @@ class Random_Images_Plugin {
 		wp_enqueue_style( 'random-images', plugins_url( 'random-images.css', __FILE__ ) );
 	}
 }
-new Random_Images_Plugin;
+Random_Images_Plugin::load();
