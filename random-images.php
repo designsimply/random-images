@@ -22,7 +22,7 @@ class Random_Images_Plugin {
 	static function random_images( $attr ) {
 		$attr = shortcode_atts( array(
 			'size' => 'thumbnail',
-			'link' => 'attachment',
+			'link' => '',
 			'total' => 6,
 		), $attr );
 
@@ -40,22 +40,27 @@ class Random_Images_Plugin {
 		$random_images = array_rand( $all_attached_images, $attr['total']  );
 		$c = count( $random_images );
 
+		if ( 1 == $c )
+			$random_images = array ( $random_images );
+
+		if ( 0 < $c ) :
 		$output = '<div class="random-images">';
 
-		if ( 1 == $c ) :
-			$output .= ' <a href="' . get_permalink( $random_images ) . '" title="' . get_the_title( $random_images ) . '">' . wp_get_attachment_image( $random_images, $attr['size'] ) . '</a>';
-
-		elseif ( 1 < $c ) :
 			while ( list( $k, $v ) = each( $random_images ) ) :
-				$output .= ' <a href="' . get_permalink( $v ) . '" title="' . get_the_title( $v ) . '">' . wp_get_attachment_image( $v, $attr['size'] ) . '</a>';
-			endwhile;
 
+				if ('file' == $attr['link'] ) :
+					$link = wp_get_attachment_url( $v );
+				else :
+					$link = get_permalink( $v );
+				endif;
+
+				$output .= ' <a href="' . $link . '" title="' . get_the_title( $v ) . '">' . wp_get_attachment_image( $v, $attr['size'] ) . '</a>';
+
+			endwhile;
+		$output .= '</div><!-- #random-images -->';
 		endif;
 
-		$output .= '</div><!-- #random-images -->';
-
-		if ( 0 < $c )
-			return $output;
+		return $output;
 	}
 
 	static function enqueue_scripts() {
