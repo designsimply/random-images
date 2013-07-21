@@ -7,7 +7,7 @@ Stable tag: 0.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The [random_images] shortcode displays random attached images from published posts.
+The [random_images] shortcode displays random attached images.
 
 == Description ==
 
