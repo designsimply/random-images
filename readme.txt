@@ -11,7 +11,11 @@ The [random_images] shortcode displays random attached images.
 
 == Description ==
 
-The `[random_images]` shortcode will display a simple set of random images. It uses any attached image in the blog for the source images. It was originally designed to be used by theme developers, so the styling is very simple. It was also released as a shortcode so people could use it in content areas if they'd like. You can enable your theme to display the `[random_images]` shortcode in a text widget by adding a snippet of code to the `functions.php` file in your theme or child theme. See the [FAQ](http://wordpress.org/plugins/random-images/faq/ "Random Images FAQ") for more info.
+The `[random_images]` shortcode will display a simple set of random images.
+
+It was originally designed to be used by theme developers, so the styling is very simple. It was also released as a shortcode so people could use it in content areas if they'd like. You can enable your theme to display the `[random_images]` shortcode in a text widget by adding a snippet of code to the `functions.php` file in your theme or child theme. See the [FAQ](http://wordpress.org/plugins/random-images/faq/ "Random Images FAQ") for more info.
+
+It uses any attached image in the blog for the source images.
 
 Using `[random_images]` will display 6 images at thumbnail size linked to attachment pages by default.
 
