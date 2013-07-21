@@ -22,6 +22,7 @@ class Random_Images_Plugin {
 	static function random_images( $attr ) {
 		$attr = shortcode_atts( array(
 			'size' => 'thumbnail',
+			'link' => 'attachment',
 			'total' => 6,
 		), $attr );
 
@@ -32,20 +33,29 @@ class Random_Images_Plugin {
 		if ( ! in_array( $attr['size'], array( 'thumbnail', 'medium', 'large', 'full' ) ) )
 			$attr['size'] = 'thumbnail';
 
+		// In this context, posts_per_page is a max number of results to randomize,
+		// not the number of results that will be displayed. It's a way of randomizing
+		// results via PHP while still taking advantage of caching the query first.
 		$all_attached_images = get_children( 'post_parent=&post_type=attachment&post_mime_type=image&posts_per_page=800&poststatus=publish' );
-		$random_image = array_rand( $all_attached_images, $attr['total']  );
+		$random_images = array_rand( $all_attached_images, $attr['total']  );
+		$c = count( $random_images );
 
 		$output = '<div class="random-images">';
-		if ( count( $random_image ) > 1 ) :
-			while ( list( $k, $v ) = each( $random_image ) ) :
-					$output .= ' <a href="' . get_permalink( $v ) . '">' . wp_get_attachment_image( $v, $attr['size'] ) . '</a>';
+
+		if ( 1 == $c ) :
+			$output .= ' <a href="' . get_permalink( $random_images ) . '" title="' . get_the_title( $random_images ) . '">' . wp_get_attachment_image( $random_images, $attr['size'] ) . '</a>';
+
+		elseif ( 1 < $c ) :
+			while ( list( $k, $v ) = each( $random_images ) ) :
+				$output .= ' <a href="' . get_permalink( $v ) . '" title="' . get_the_title( $v ) . '">' . wp_get_attachment_image( $v, $attr['size'] ) . '</a>';
 			endwhile;
-		else :
-			$output .= ' <a href="' . get_permalink( $random_image ) . '">' . wp_get_attachment_image( $random_image, $attr['size'] ) . '</a>';
+
 		endif;
+
 		$output .= '</div><!-- #random-images -->';
 
-		return $output;
+		if ( 0 < $c )
+			return $output;
 	}
 
 	static function enqueue_scripts() {
