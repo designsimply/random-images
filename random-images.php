@@ -2,69 +2,111 @@
 /**
  * Plugin Name: Random Images
  * Description: Display a set of random attached images with the [random_images] shortcode.
- * Version: 0.7
- * Author: Sheri Bigelow
+ * Version: 1.0
+ * Author: Sheri Grey
  * Author URI: http://designsimply.com/
  * License: GPLv2 or later
  */
 
 class Random_Images_Plugin {
 
-	static function load() {
-		add_action( 'init', array( 'Random_Images_Plugin', 'init' ) );
-		add_action( 'wp_enqueue_scripts', array( 'Random_Images_Plugin', 'enqueue_scripts' ) );
-	}
+        static function load() {
+                add_shortcode( 'random_images', array( 'Random_Images_Plugin', 'random_images' ) );
+        }
 
-	static function init() {
-		add_shortcode( 'random_images', array( 'Random_Images_Plugin', 'random_images' ) );
-	}
+        static function random_image_url() {
+			global $wpdb;
+			$sql = "
+			SELECT
+					ID
+			FROM
+					$wpdb->posts
+			WHERE
+					post_type='attachment'
+					AND post_mime_type LIKE 'image%'
+					AND post_status='inherit'
+			ORDER BY RAND() 
+			LIMIT 100";
 
-	static function random_images( $attr ) {
-		$attr = shortcode_atts( array(
-			'size' => 'thumbnail',
-			'link' => '',
-			'total' => 6,
-		), $attr );
+			$image_ids = $wpdb->get_results( $sql );
+			$image_url = wp_get_attachment_image_url( $image_ids[0]->ID );
 
-		$attr['total'] = absint( $attr['total'] );
-		if ( ! in_array( $attr['total'] , range( 1, 100 ) ) )
-			$attr['total'] = 6;
+			return $image_url;
+		}
 
-		if ( ! in_array( $attr['size'], array( 'thumbnail', 'medium', 'large', 'full' ) ) )
-			$attr['size'] = 'thumbnail';
+        static function random_image_permalink() {
+			global $wpdb;
+			$sql = "
+			SELECT
+					ID
+			FROM
+					$wpdb->posts
+			WHERE
+					post_type='attachment'
+					AND post_mime_type LIKE 'image%'
+					AND post_status='inherit'
+			ORDER BY RAND() 
+			LIMIT 250";
 
-		// In this context, posts_per_page is a max number of results to randomize,
-		// not the number of results that will be displayed. It's a way of randomizing
-		// results via PHP while still taking advantage of caching the query first.
-		$all_attached_images = get_children( 'post_parent=&post_type=attachment&post_mime_type=image&posts_per_page=800&poststatus=publish' );
-		$random_images = array_rand( $all_attached_images, $attr['total']  );
-		$c = count( $random_images );
+			$image_ids = $wpdb->get_results( $sql );
+			$attachment_url = get_post_permalink( $image_ids[0] );
 
-		if ( 1 == $c )
-			$random_images = array ( $random_images );
+			if ( ! empty( $attachment_url ) ) {
+				return $attachment_url;
+			} else {
+				if ( is_user_logged_in() ) {
+						return "Error: no images found. Add some images to posts.";
+				}
+			}
+		}
 
-		if ( 0 < $c ) :
-		$output = '<div class="random-images">';
+        static function random_images( $attr ) {
+                $attr = shortcode_atts( array(
+                        'size' => 'thumbnail',
+                        'link' => '',
+                        'total' => 6,
+                ), $attr );
 
-			while ( list( $k, $v ) = each( $random_images ) ) :
+	        // Query the database for just the image ids.
+	        // TODO add escaped limit input
+	        global $wpdb;
 
-				if ('file' == $attr['link'] ) :
-					$link = wp_get_attachment_url( $v );
-				else :
-					$link = get_permalink( $v );
-				endif;
+	        $sql = "
+	        SELECT
+	                ID
+	        FROM
+	                $wpdb->posts
+	        WHERE
+	                post_type='attachment'
+	                AND post_mime_type LIKE 'image%'
+	                AND post_status='inherit'
+	        ORDER BY RAND() LIMIT " . $attr['total'];
 
-				$output .= ' <a href="' . $link . '" title="' . get_the_title( $v ) . '">' . wp_get_attachment_image( $v, $attr['size'] ) . '</a>';
+	        $image_ids = $wpdb->get_results( $sql );
 
-			endwhile;
-		$output .= '</div><!-- #random-images -->';
-		endif;
+	        foreach ( $image_ids as $image ) {
+	                $my_images[] = array(
+	                        'title' => get_the_title( $image->ID ),
+	                        'url' => wp_get_attachment_url( $image->ID ),
+	                        'image' => wp_get_attachment_image( $image->ID, $attr['size'] ),
+							'permalink' => get_post_permalink( $image->ID )
+	                );
+	        }
 
-		return $output;
-	}
-
-	static function enqueue_scripts() {
-		wp_enqueue_style(  'random-images', plugins_url( 'random-images.css', __FILE__ ) );
-	}
+	        if ( ! empty( $my_images ) ) {
+	                $output = '<div class="random-images">';
+	                foreach ($my_images as $my_image) {
+	                        // TODO sanitize the output
+	                        $output .= ' <a href="' . $my_image['permalink'] . '" title="' . $my_image['title'] . '">' . $my_image['image'] . '</a>';
+	                        // $output .= $my_image['link'];
+	                }
+	                $output .= '</div><!-- #random-images -->';
+					return $output;
+	        } else {
+	                if ( is_user_logged_in() ) {
+	                        return "Error: no images found. Add some images to posts.";
+	                }
+	        }
+        }
 }
 Random_Images_Plugin::load();
