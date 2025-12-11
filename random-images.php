@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Random Images
  * Description: Display a set of random attached images with the [random_images] shortcode.
- * Version: 1.0
+ * Version: 1.0.1
  * Author: Sheri Grey
  * Author URI: http://designsimply.com/
  * License: GPLv2 or later
@@ -29,6 +29,9 @@ class Random_Images_Plugin {
 			LIMIT 100";
 
 			$image_ids = $wpdb->get_results( $sql );
+			if ( empty( $image_ids ) || ! isset( $image_ids[0]->ID ) ) {
+				return null;
+			}
 			$image_url = wp_get_attachment_image_url( $image_ids[0]->ID );
 
 			return $image_url;
@@ -49,6 +52,12 @@ class Random_Images_Plugin {
 			LIMIT 250";
 
 			$image_ids = $wpdb->get_results( $sql );
+			if ( empty( $image_ids ) || ! isset( $image_ids[0] ) ) {
+				if ( is_user_logged_in() ) {
+					return "Error: no images found. Add some images to posts.";
+				}
+				return null;
+			}
 			$attachment_url = get_post_permalink( $image_ids[0] );
 
 			if ( ! empty( $attachment_url ) ) {
@@ -71,19 +80,21 @@ class Random_Images_Plugin {
 	        // TODO add escaped limit input
 	        global $wpdb;
 
-	        $sql = "
+	        $total = absint( $attr['total'] );
+	        $sql = $wpdb->prepare( "
 	        SELECT
 	                ID
 	        FROM
 	                $wpdb->posts
 	        WHERE
 	                post_type='attachment'
-	                AND post_mime_type LIKE 'image%'
+	                AND post_mime_type LIKE %s
 	                AND post_status='inherit'
-	        ORDER BY RAND() LIMIT " . $attr['total'];
+	        ORDER BY RAND() LIMIT %d", 'image%', $total );
 
 	        $image_ids = $wpdb->get_results( $sql );
 
+	        $my_images = array();
 	        foreach ( $image_ids as $image ) {
 	                $my_images[] = array(
 	                        'title' => get_the_title( $image->ID ),
@@ -96,9 +107,7 @@ class Random_Images_Plugin {
 	        if ( ! empty( $my_images ) ) {
 	                $output = '<div class="random-images">';
 	                foreach ($my_images as $my_image) {
-	                        // TODO sanitize the output
-	                        $output .= ' <a href="' . $my_image['permalink'] . '" title="' . $my_image['title'] . '">' . $my_image['image'] . '</a>';
-	                        // $output .= $my_image['link'];
+	                        $output .= ' <a href="' . esc_url( $my_image['permalink'] ) . '" title="' . esc_attr( $my_image['title'] ) . '">' . $my_image['image'] . '</a>';
 	                }
 	                $output .= '</div><!-- #random-images -->';
 					return $output;
