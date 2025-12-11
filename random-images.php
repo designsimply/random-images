@@ -16,17 +16,21 @@ class Random_Images_Plugin {
 
         static function random_image_url() {
 			global $wpdb;
-			$sql = "
+			
+			// Add cache-busting seed to prevent query result caching
+			$random_seed = time() . mt_rand();
+			
+			$sql = $wpdb->prepare( "
 			SELECT
 					ID
 			FROM
 					$wpdb->posts
 			WHERE
 					post_type='attachment'
-					AND post_mime_type LIKE 'image%'
+					AND post_mime_type LIKE %s
 					AND post_status='inherit'
-			ORDER BY RAND() 
-			LIMIT 100";
+			ORDER BY RAND(%d) 
+			LIMIT 100", 'image%', $random_seed );
 
 			$image_ids = $wpdb->get_results( $sql );
 			if ( empty( $image_ids ) || ! isset( $image_ids[0]->ID ) ) {
@@ -39,17 +43,21 @@ class Random_Images_Plugin {
 
         static function random_image_permalink() {
 			global $wpdb;
-			$sql = "
+			
+			// Add cache-busting seed to prevent query result caching
+			$random_seed = time() . mt_rand();
+			
+			$sql = $wpdb->prepare( "
 			SELECT
 					ID
 			FROM
 					$wpdb->posts
 			WHERE
 					post_type='attachment'
-					AND post_mime_type LIKE 'image%'
+					AND post_mime_type LIKE %s
 					AND post_status='inherit'
-			ORDER BY RAND() 
-			LIMIT 250";
+			ORDER BY RAND(%d) 
+			LIMIT 250", 'image%', $random_seed );
 
 			$image_ids = $wpdb->get_results( $sql );
 			if ( empty( $image_ids ) || ! isset( $image_ids[0] ) ) {
@@ -81,6 +89,10 @@ class Random_Images_Plugin {
 	        global $wpdb;
 
 	        $total = absint( $attr['total'] );
+	        
+	        // Add cache-busting seed to prevent query result caching
+	        $random_seed = time() . mt_rand();
+	        
 	        $sql = $wpdb->prepare( "
 	        SELECT
 	                ID
@@ -90,7 +102,7 @@ class Random_Images_Plugin {
 	                post_type='attachment'
 	                AND post_mime_type LIKE %s
 	                AND post_status='inherit'
-	        ORDER BY RAND() LIMIT %d", 'image%', $total );
+	        ORDER BY RAND(%d) LIMIT %d", 'image%', $random_seed, $total );
 
 	        $image_ids = $wpdb->get_results( $sql );
 
